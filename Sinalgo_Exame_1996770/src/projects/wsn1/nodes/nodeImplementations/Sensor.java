@@ -18,6 +18,7 @@ import sinalgo.nodes.messages.Message;
 
 public class Sensor extends Node {
 
+    //declaring the variables
     private Node proximoNoAteEstacaoBase;   
     private Node origem;
     private Integer sequenceNumber = 0;   
@@ -37,32 +38,31 @@ public class Sensor extends Node {
         while (inbox.hasNext()) {
             Message message = inbox.next();
             if (message instanceof WsnMsg) {
-                Boolean encaminhar = Boolean.TRUE; //Caso ele nao passe por nenhuma dessas condicoes, a mensagem sera encaminhada
+                Boolean encaminhar = Boolean.TRUE; //If it does not pass any of these conditions, the message will be forwarded.
                 WsnMsg wsnMessage = (WsnMsg) message;   
                                 
-                if (wsnMessage.forwardingHop.equals(this)) { // A mensagem voltou. O nó deve descarta-la
+                if (wsnMessage.forwardingHop.equals(this)) { // The message came back. The node should discard it
                     encaminhar = Boolean.FALSE;
-                } else if (wsnMessage.tipoMsg == 0) { // A mensagem e um flood. Devemos atualizar a rota
-                    if ((proximoNoAteEstacaoBase == null || wsnMessage.saltosAteDestino<this.saltos) && sink == false) { //Significa que é a primeira mensagem recebida pelo nó ou que saltos é menor                 	                  	
+                } else if (wsnMessage.tipoMsg == 0) { // The message is a flood. We must update the route
+                    if ((proximoNoAteEstacaoBase == null || wsnMessage.saltosAteDestino<this.saltos) && sink == false) { //It means that it is the first message received by the node or that it jumps is smaller and that it is not a sink                 	                  	
                     	System.out.println("Node " +this.ID + " recebe pacote de Sink " + wsnMessage.origem.ID + " com numero de saltos: " + wsnMessage.saltosAteDestino);
-                    	proximoNoAteEstacaoBase = inbox.getSender(); //Logo, é preciso guardar as  suas referencias
+                    	proximoNoAteEstacaoBase = inbox.getSender(); //It is necessary to keep your references
                     	this.saltos = wsnMessage.saltosAteDestino;
-                    	sequenceNumber = wsnMessage.sequenceID; //Atualiza o numero de sequencia da ultima mensagem recebida
+                    	sequenceNumber = wsnMessage.sequenceID; //Updates the sequence number of the last message received
                     	this.origem = wsnMessage.origem;
                     	this.setColor(wsnMessage.origem.getColor());
 
-                    } else if ((sequenceNumber < wsnMessage.sequenceID)&& sink == false) { //Significa que a mensagem recebida é nova ja que o sequence number é menor
-                        sequenceNumber = wsnMessage.sequenceID; //Atualiza o número de sequencia da ultima mensagem recebida
+                    } else if ((sequenceNumber < wsnMessage.sequenceID)&& sink == false) { //It means that the message received is new since the sequence number is smaller and it is not a sink.
+                        sequenceNumber = wsnMessage.sequenceID; //Updates the sequence number of the last message received
                         
                         
-                    } else { //Se não for nem uma mensagem nova, nem a primeira, não envia a mensagem
+                    } else { //If it is neither a new message nor the first one, it does not send the message
                         encaminhar = Boolean.FALSE;  
                         
                     }
                 }                 
                 if (encaminhar) {
-                    //Devemos alterar o campo forwardingHop(da mensagem) para armazenar o
-                	//nó que vai encaminhar a mensagem.
+                    //We must change the forwardingHop(field of the message) to store the node that will forward the message.
                     wsnMessage.forwardingHop = this;
                     wsnMessage.saltosAteDestino++;
                     this.broadcast(wsnMessage);
@@ -73,6 +73,7 @@ public class Sensor extends Node {
 
     @Override
     public void preStep() {	
+	    
     	if (this.proximoNoAteEstacaoBase != null && sink == false) {
     		if(tempoEnvio < tempoRound) {		
 	    		WsnMsg msgMessage = new WsnMsg(sequencia, this, this.origem, this, 1); 
@@ -80,7 +81,8 @@ public class Sensor extends Node {
 	    		this.tempoRound = 0;	    			    		
     		}
     	}
-  
+
+	    //Reset nodes to update references
 	    if (this.proximoNoAteEstacaoBase != null && sink == false) {
 	    	if(verificador <= this.contador) { 
 	    		System.out.println("Node resetando: " +this.ID);
@@ -89,24 +91,27 @@ public class Sensor extends Node {
 	    		this.contador = 0;	    			    		
 	    	}
 	    }
+
+	    //If it is a sink, every 50 rounds it will build routing
 	    if (countsink >=50 && sink == true) {
 	    	construirRoteamento();
 	    	countsink = 0;
 	    }
-	    
+
+	    //increments the counters
 	    this.countsink++;
 		this.contador++; 
 		this.tempoRound++;
     }
 
     
-	@NodePopupMethod(menuText = "Construir Arvore de Roteamento") //Caso clique nesse botao, se transformara em sink node
+	@NodePopupMethod(menuText = "Construir Arvore de Roteamento") //If you click on this button, it will turn into a sink node.
 	public void construirRoteamento() {
 		sink = true;
 		System.out.println("Mensagem de roteamento agendada pelo Sink " +this.ID);
 	    WsnMsg wsnMessage = new WsnMsg(1, this, null, this, 0); 
 	    WsnMessageTimer timer = new WsnMessageTimer(wsnMessage);
-	    timer.startRelative(1, this); //Envia uma mensagem no round seguinte	
+	    timer.startRelative(1, this); //Send a message in the next round	
     	this.setColor(Color.BLUE);
 
 	}
