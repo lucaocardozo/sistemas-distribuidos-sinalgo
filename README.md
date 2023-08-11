@@ -24,3 +24,5 @@ Then it is necessary to run the code with a specific number of rounds or Run For
 ## How to find the project implementation
 
 To find the implementation of this project, you need to navigate to the project folder, which can be found [here](https://github.com/lucaocardozo/sistemas-distribuidos-sinalgo/tree/master/Sinalgo_Exame_1996770/src/projects/wsn1)
+
+To find the node implementation, you can click [here](https://github.com/lucaocardozo/sistemas-distribuidos-sinalgo/tree/master/Sinalgo_Exame_1996770/src/projects/wsn1/nodes/nodeImplementations)
