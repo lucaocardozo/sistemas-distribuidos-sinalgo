@@ -10,22 +10,22 @@ import sinalgo.nodes.messages.Message;
  * @author pozza
  */
 public class WsnMsg extends Message {
-//Identificador da mensagem
+//Message identifier
     public Integer sequenceID;
-//Tempo de vida do Pacote
+//Lifetime of the Package
     public Integer ttl;
-//No de destino
+//Destination node
     public Node destino;
-//No de origem
+//Origin node
     public Node origem;
-//No que vai reencaminhar a mensagem - de quem a mensagem foi recebida
+//Node that will forward the message - from whom the message was received
     public Node forwardingHop;
-//Numero de saltos ate o destino
+//Number of jumps to destination
     public Integer saltosAteDestino = 0;
-//Tipo do Pacote. 0 para Estabelecimento de Rotas e 1 para pacotes de dados
+//Packet Type. 0 for Route Establishment and 1 for data packets
     public Integer tipoMsg = 0;
-//Construtor da Classe
-   
+    
+//Class Constructor
     public WsnMsg(Integer seqID, Node origem, Node destino, Node forwardingHop, Integer tipo) {
         this.sequenceID = seqID;
         this.origem = origem;
@@ -35,7 +35,7 @@ public class WsnMsg extends Message {
     }
 
     @Override
-    public Message clone() { //usado para enviar a mensagem
+    public Message clone() { //Used to send the message
         WsnMsg msg = new WsnMsg(this.sequenceID, this.origem,
         this.destino, this.forwardingHop, this.tipoMsg);
         msg.ttl = this.ttl;
